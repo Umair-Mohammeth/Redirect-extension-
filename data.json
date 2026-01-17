@@ -2,6 +2,13 @@
   "social_media": [
     "facebook.com",
     "instagram.com",
-    "netflix.com"
-  ]
+    "x.com",
+    "tiktok.com"
+  ],
+  "search_engines": [
+    "https://www.google.com",
+    "https://www.duckduckgo.com",
+    "https://www.bing.com"
+  ],
+  "redirect_to": "https://www.google.com"
 }
