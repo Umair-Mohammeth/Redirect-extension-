@@ -8,7 +8,7 @@
   "search_engines": [
     "https://www.google.com",
     "https://www.duckduckgo.com",
-    "https://www.bing.com"
-  ],
-  "redirect_to": "https://www.google.com"
+    "https://www.bing.com",
+    "https://www.ecosia.org"
+  ]
 }
