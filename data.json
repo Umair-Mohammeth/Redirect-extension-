@@ -3,12 +3,15 @@
     "facebook.com",
     "instagram.com",
     "x.com",
-    "tiktok.com"
+    "twitter.com",
+    "tiktok.com",
+    "reddit.com",
+    "youtube.com"
   ],
   "search_engines": [
-    "https://www.google.com",
-    "https://www.duckduckgo.com",
-    "https://www.bing.com",
-    "https://www.ecosia.org"
+    "https://www.google.com/",
+    "https://www.duckduckgo.com/",
+    "https://www.bing.com/",
+    "https://www.ecosia.org/"
   ]
 }
