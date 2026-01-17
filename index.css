@@ -270,3 +270,64 @@ input:checked+.slider:before {
 .footer span {
     color: var(--red-500);
 }
+
+/* New UI Elements */
+.stats-container {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    color: var(--red-500);
+    font-weight: 700;
+}
+
+.schedule-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.schedule-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.schedule-inputs {
+    display: flex;
+    gap: 5px;
+}
+
+.time-input {
+    background: var(--black-800);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-main);
+    padding: 4px;
+    border-radius: 4px;
+    width: 60px;
+    font-size: 0.75rem;
+}
+
+.options-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.options-btn:hover {
+    color: var(--red-500);
+}

@@ -1,0 +1,33 @@
+{
+    "manifest_version": 3,
+    "name": "Umair Dynamic Redirector (Firefox)",
+    "version": "1.1",
+    "permissions": [
+        "declarativeNetRequest",
+        "declarativeNetRequestFeedback",
+        "alarms",
+        "storage",
+        "idle"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "options_ui": {
+        "page": "options.html",
+        "open_in_tab": true
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "redirect-extension@umair.dev",
+            "strict_min_version": "109.0"
+        }
+    }
+}

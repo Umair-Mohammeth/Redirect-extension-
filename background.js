@@ -1,10 +1,30 @@
-const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Umair-Mohammeth/Redirect-extension-/main/data.json";
+const defaultSocialMedia = [
+    "facebook.com", "instagram.com", "x.com", "twitter.com", "tiktok.com", "reddit.com", "youtube.com"
+];
+
+const defaultSearchEngines = [
+    "https://www.google.com/", "https://www.duckduckgo.com/", "https://www.bing.com/", "https://www.ecosia.org/"
+];
+
+// Initialize storage on install
+chrome.runtime.onInstalled.addListener(async () => {
+    const data = await chrome.storage.local.get(['social_media', 'search_engines', 'stats']);
+    if (!data.social_media) {
+        await chrome.storage.local.set({ social_media: defaultSocialMedia });
+    }
+    if (!data.search_engines) {
+        await chrome.storage.local.set({ search_engines: defaultSearchEngines });
+    }
+    if (!data.stats) {
+        await chrome.storage.local.set({ stats: { redirectCount: 0 } });
+    }
+    updateRedirectRules();
+});
 
 async function updateRedirectRules() {
     try {
-        // Check if the extension is enabled
-        const result = await chrome.storage.local.get(['isEnabled']);
-        const isEnabled = result.isEnabled !== false; // Default to true
+        const result = await chrome.storage.local.get(['isEnabled', 'social_media', 'search_engines']);
+        const isEnabled = result.isEnabled !== false;
 
         if (!isEnabled) {
             console.log("Extension is disabled. Removing all rules.");
@@ -16,19 +36,15 @@ async function updateRedirectRules() {
             return;
         }
 
-        const response = await fetch(GITHUB_RAW_URL);
-        const data = await response.json();
+        const socialSites = result.social_media || defaultSocialMedia;
+        const engineList = result.search_engines || defaultSearchEngines;
 
-        if (!data.social_media || !data.search_engines || data.search_engines.length === 0) {
-            throw new Error("Invalid data format or empty search engines list");
+        if (socialSites.length === 0 || engineList.length === 0) {
+            console.warn("No sites to block or engines to redirect to.");
+            return;
         }
 
-        const socialSites = data.social_media;
-        const engineList = data.search_engines;
-
-        // Randomly select a search engine
         const randomEngine = engineList[Math.floor(Math.random() * engineList.length)];
-
         console.log("Selected Random Engine: " + randomEngine);
 
         const newRules = socialSites.map((site, index) => {
@@ -58,6 +74,17 @@ async function updateRedirectRules() {
         console.error("Critical Error in updateRedirectRules:", error);
     }
 }
+
+// Track redirects
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
+    if (info.request.documentLifecycle === "active") {
+        chrome.storage.local.get(['stats'], (result) => {
+            const stats = result.stats || { redirectCount: 0 };
+            stats.redirectCount++;
+            chrome.storage.local.set({ stats });
+        });
+    }
+});
 
 // Update rules immediately on state change or startup
 chrome.runtime.onInstalled.addListener(updateRedirectRules);
@@ -100,5 +127,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-chrome.alarms.create("randomize", { periodInMinutes: 5 });
-chrome.alarms.onAlarm.addListener(updateRedirectRules);
+// Schedule Check
+chrome.alarms.create("checkSchedule", { periodInMinutes: 1 });
+
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+    if (alarm.name === "randomize") {
+        updateRedirectRules();
+    }
+    else if (alarm.name === "checkSchedule") {
+        const data = await chrome.storage.local.get(['schedule', 'isEnabled']);
+        if (!data.schedule || !data.schedule.enabled) return;
+
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+
+        const [startH, startM] = data.schedule.startTime.split(':').map(Number);
+        const [endH, endM] = data.schedule.endTime.split(':').map(Number);
+
+        const startTotal = startH * 60 + startM;
+        const endTotal = endH * 60 + endM;
+
+        let isActiveTime = false;
+        if (endTotal > startTotal) {
+            isActiveTime = currentTime >= startTotal && currentTime < endTotal;
+        } else {
+            // Crosses midnight (e.g. 23:00 to 07:00)
+            isActiveTime = currentTime >= startTotal || currentTime < endTotal;
+        }
+
+        const shouldBeEnabled = isActiveTime;
+
+        if (data.isEnabled !== shouldBeEnabled) {
+            console.log(`Schedule Update: Setting enabled to ${shouldBeEnabled}`);
+            await chrome.storage.local.set({ isEnabled: shouldBeEnabled });
+            updateRedirectRules();
+            chrome.runtime.sendMessage({ action: "stateChanged", enabled: shouldBeEnabled }).catch(() => { });
+        }
+    }
+});

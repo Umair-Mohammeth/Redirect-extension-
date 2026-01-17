@@ -13,6 +13,16 @@
     <canvas id="three-canvas"></canvas>
 
     <div class="app-container" id="app">
+        <button id="optionsBtn" class="options-btn" title="Settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                </path>
+            </svg>
+        </button>
+
         <div class="header">
             <h1>Protocol</h1>
             <p>System Redirection</p>
@@ -20,7 +30,7 @@
 
         <div class="controls-section">
             <div class="power-switcher">
-                <span class="switch-label">Operation Status</span>
+                <span class="switch-label">System Active</span>
                 <label class="switch">
                     <input type="checkbox" id="powerToggle" checked>
                     <span class="slider"></span>
@@ -30,6 +40,28 @@
             <div class="status-badge" id="badge">
                 <span class="status-dot"></span>
                 <span id="statusText">System Standby</span>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-container">
+                <span>Total Redirects</span>
+                <span id="redirectCount" class="stat-value">0</span>
+            </div>
+
+            <!-- Schedule -->
+            <div class="schedule-container">
+                <div class="schedule-row">
+                    <span class="switch-label" style="font-size: 0.75rem;">Focus Schedule</span>
+                    <label class="switch" style="transform: scale(0.8);">
+                        <input type="checkbox" id="scheduleToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="schedule-inputs" id="scheduleInputs" style="opacity: 0.5; pointer-events: none;">
+                    <input type="time" id="startTime" class="time-input" value="09:00">
+                    <span style="align-self: center;">-</span>
+                    <input type="time" id="endTime" class="time-input" value="17:00">
+                </div>
             </div>
 
             <button id="refreshBtn" class="action-btn">
@@ -42,7 +74,7 @@
         </div>
 
         <div class="footer">
-            v1.3 &bull; <span>Admin: Umair</span>
+            v2.0 &bull; <span>Admin: Umair</span>
         </div>
     </div>
 

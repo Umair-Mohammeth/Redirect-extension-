@@ -1,4 +1,6 @@
 // Three.js Background Animation - RED Protocol
+let updateVisualStateGlobal;
+
 function initThree() {
     const canvas = document.querySelector('#three-canvas');
     if (!canvas) return;
@@ -17,7 +19,7 @@ function initThree() {
 
     // Create particles
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 200; // Increased density for red look
+    const particlesCount = 200;
 
     const posArray = new Float32Array(particlesCount * 3);
 
@@ -27,9 +29,13 @@ function initThree() {
 
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
+    // Initial Material State (Active/Red)
+    const targetColor = new THREE.Color('#ff0000');
+    const standbyColor = new THREE.Color('#4a90e2'); // Blueish
+
     const material = new THREE.PointsMaterial({
         size: 0.012,
-        color: '#ff0000', // Pure RED
+        color: targetColor,
         transparent: true,
         opacity: 0.6,
         blending: THREE.AdditiveBlending
@@ -42,17 +48,37 @@ function initThree() {
 
     let mouseX = 0;
     let mouseY = 0;
+    let targetSpeed = 0.002;
+    let currentSpeed = 0.002;
+    let isStandby = false;
 
     document.addEventListener('mousemove', (event) => {
         mouseX = (event.clientX / window.innerWidth) - 0.5;
         mouseY = (event.clientY / window.innerHeight) - 0.5;
     });
 
+    // Exposed function to update state
+    updateVisualStateGlobal = function (isActive) {
+        isStandby = !isActive;
+        if (isActive) {
+            targetSpeed = 0.002; // Fast
+        } else {
+            targetSpeed = 0.0005; // Slow
+        }
+    };
+
     function animate() {
         requestAnimationFrame(animate);
 
-        particlesMesh.rotation.y += 0.002;
-        particlesMesh.rotation.x += 0.001;
+        // Lerp speed
+        currentSpeed += (targetSpeed - currentSpeed) * 0.05;
+
+        // Lerp color
+        const target = isStandby ? standbyColor : targetColor;
+        material.color.lerp(target, 0.05);
+
+        particlesMesh.rotation.y += currentSpeed;
+        particlesMesh.rotation.x += currentSpeed * 0.5;
 
         // Influence by mouse
         particlesMesh.rotation.y += mouseX * 0.1;
@@ -71,3 +97,8 @@ function initThree() {
 }
 
 document.addEventListener('DOMContentLoaded', initThree);
+
+// Allow external access if loaded
+window.updateVisualState = function (isActive) {
+    if (updateVisualStateGlobal) updateVisualStateGlobal(isActive);
+};
